@@ -1,0 +1,6 @@
+<h1>Recipes</h1>
+<ul>
+{% for recipe in recipe_list %}
+    <li><a href="{% url 'recipes:detail' recipe.id %}">{{ recipe.name }}</a></li>
+{% endfor %}
+</ul>

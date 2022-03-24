@@ -1,0 +1,32 @@
+<h3>
+    <a href="{% url 'recipes:index' %}">All Recipes</a>
+    <a href="{% url 'recipes:edit' recipe.id %}">Edit</a>
+</h3>
+
+<h1>{{ recipe.name }}</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Ingredient</th>
+        <th>Unit Cost</th>
+        <th>Amount</th>
+        <th>Cost</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for ri in recipe.recipeingredient_set.all %}
+        <tr>
+            <td>{{ ri.ingredient.name }}</td>
+            <td>{{ ri.ingredient.description }}</td>
+            <td>{{ ri.amount }}</td>
+            <td>{{ ri.cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th colspan="3" class="text-right">Total:</th>
+        <th>{{ recipe.total_cost }}</th>
+    </tr>
+    </tfoot>
+</table>
