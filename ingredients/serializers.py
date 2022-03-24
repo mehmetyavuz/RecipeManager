@@ -3,15 +3,13 @@ from rest_framework import serializers
 from .models import Ingredient, Unit
 
 
-class UnitSerializer(serializers.HyperlinkedModelSerializer):
+class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
-        fields = ['name']
+        fields = '__all__'
 
 
-class IngredientSerializer(serializers.HyperlinkedModelSerializer):
-    unit = UnitSerializer()
-
+class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ['id', 'name', 'article_number', 'unit', 'amount', 'cost']
+        fields = '__all__'

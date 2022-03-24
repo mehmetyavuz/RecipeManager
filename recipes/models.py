@@ -23,3 +23,6 @@ class RecipeIngredient(models.Model):
 
     def cost(self):
         return self.amount * self.ingredient.cost
+
+    def __str__(self):
+        return self.recipe.name

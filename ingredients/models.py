@@ -13,7 +13,7 @@ class Unit(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(null=False, max_length=200)
-    article_number = models.IntegerField(null=False, unique=True, auto_created=True)
+    article_number = models.IntegerField(null=False)
     unit = models.ForeignKey(Unit, null=False, on_delete=models.DO_NOTHING)
     amount = models.IntegerField(null=False)
     cost = models.DecimalField(null=False, max_digits=10, decimal_places=2)
