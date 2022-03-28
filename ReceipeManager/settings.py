@@ -137,3 +137,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "https://dynamic-lokum-0bd285.netlify.app/"
 # ]
 CORS_ALLOW_METHODS = ['*']
+ALLOWED_HOSTS = [
+    '0.0.0.0'
+    'receipe-manager.herokuapp.com',
+    '127.0.0.1'
+]
