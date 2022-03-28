@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -135,4 +136,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "https://dynamic-lokum-0bd285.netlify.app",
 #     "https://dynamic-lokum-0bd285.netlify.app/"
 # ]
-CORS_ALLOW_METHODS = ['DELETE', 'GET', 'POST', 'PUT']
+CORS_ALLOW_METHODS = ['*']
