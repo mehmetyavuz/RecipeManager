@@ -1,17 +1,52 @@
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
+
+from ingredients.models import Ingredient
 from .serializers import RecipeSerializer, RecipeIngredientSerializer
 from .models import Recipe, RecipeIngredient
 
 
 @csrf_exempt
 def recipes(request):
+
     if request.method == 'GET':
         all_units = Recipe.objects.all()
         serializer = RecipeSerializer(all_units, many=True,
                                       context={'request', request})
         return JsonResponse(serializer.data, safe=False)
+
+    elif request.method =='POST' or request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if request.method == 'POST':
+            serializer = RecipeSerializer(data=data,
+                                          context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+
+        elif request.method == 'PUT':
+            obj = Recipe.objects.get(pk=data['id'])
+            serializer = RecipeSerializer(obj,
+                                          data=data,
+                                          context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+
+        return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+def recipe(request, recipe_id):
+    if request.method == 'DELETE':
+        try:
+            obj = Recipe.objects.get(pk=recipe_id)
+            obj.delete()
+            return HttpResponse(status=204)
+        except:
+            return HttpResponse(status=404)
 
 
 @csrf_exempt
@@ -21,61 +56,44 @@ def recipe_ingredients(request, recipe_id):
         serializer = RecipeIngredientSerializer(all_objs, many=True,
                                                 context={'request': request})
         return JsonResponse(serializer.data, safe=False)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = RecipeIngredientSerializer(data=data,
-                                                context={'request': request})
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-
-        return JsonResponse(serializer.errors, status=400)
 
 
 @csrf_exempt
-def recipe_ingredient(request, pk):
-    try:
-        obj = RecipeIngredient.objects.get(pk=pk)
-    except:
-        return HttpResponse(status=404)
-
+def update_recipe_ingredients(request, recipe_id):
     if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = RecipeIngredientSerializer(obj, data=data,
-                                                context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        obj.delete()
-        return HttpResponse(status=204)
+        try:
+            data = JSONParser().parse(request)
+            data_ids = []
+            for d in data:
+                if 'id' in d.keys():
+                    data_ids.append(d['id'])
+                    ri = RecipeIngredient.objects.get(id=d['id'])
+                    if ri:
+                        ri.amount = d['amount']
+                        ri.save()
+                else:
+                    # create new one
+                    recipe = Recipe.objects.get(id=d['recipe']['id'])
+                    ingredient = Ingredient.objects.get(id=d['ingredient']['id'])
+                    new_ri = RecipeIngredient.objects.create(
+                        recipe=recipe,
+                        ingredient=ingredient,
+                        amount=d['amount']
+                    )
+                    new_ri.save()
+                    data_ids.append(new_ri.id)
 
-# def index(request):
-#     recipe_list = Recipe.objects.order_by('name')
-#     context = {'recipe_list': recipe_list}
-#     return render(request, 'recipes/index.html', context)
-#
-#
-# def detail(request, recipe_id):
-#     recipe = get_object_or_404(Recipe, pk=recipe_id)
-#     return render(request, 'recipes/detail.html', {'recipe': recipe})
-#
-#
-# def add_edit(request, recipe_id=None):
-#     if request.method == 'POST':
-#         new_name = request.POST['name']
-#         if recipe_id:
-#             recipe = Recipe.objects.get(id=recipe_id)
-#             recipe.name = new_name
-#         else:
-#             recipe = Recipe(name=new_name)
-#         recipe.save()
-#         return HttpResponseRedirect(reverse('recipes:detail', args=(recipe.id,)))
-#     else:
-#         recipe = Recipe
-#         if recipe_id:
-#             recipe = Recipe.objects.get(id=recipe_id)
-#
-#         return render(request, 'recipes/add_edit.html', {'recipe': recipe})
+            # delete removed ingredients
+            RecipeIngredient.objects.filter(recipe_id=recipe_id).exclude(pk__in=data_ids).delete()
+
+            all_objs = RecipeIngredient.objects.filter(recipe_id=recipe_id)
+            serializer = RecipeIngredientSerializer(all_objs, many=True,
+                                                    context={'request': request})
+            return JsonResponse(serializer.data, safe=False)
+
+        except Exception as e:
+            return HttpResponse(e, status=404)
+        # return JsonResponse(serializer.errors, status=400, safe=False)
+    # elif request.method == 'DELETE':
+    #     obj.delete()
+    #     return HttpResponse(status=204)

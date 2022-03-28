@@ -51,36 +51,3 @@ def ingredient(request, pk):
     elif request.method == 'DELETE':
         obj.delete()
         return HttpResponse(status=204)
-
-# def index(request):
-#     ingredient_list = Ingredient.objects.order_by('name')
-#     context = {'ingredient_list': ingredient_list}
-#     return render(request, 'ingredients/index.html', context)
-#
-#
-# def detail(request, ingredient_id):
-#     ingredient = get_object_or_404(Ingredient, pk=ingredient_id)
-#     return render(request, 'ingredients/detail.html', {'ingredient': ingredient})
-#
-#
-# def edit(request, ingredient_id):
-#     if request.method == 'POST':
-#         i = Ingredient.objects.get(pk=ingredient_id)
-#         f = IngredientForm(request.POST, instance=i)
-#         f.save()
-#         return HttpResponseRedirect(reverse('ingredients:detail', args=(i.id,)))
-#     else:
-#         ingredient = get_object_or_404(Ingredient, pk=ingredient_id)
-#         f = IngredientForm(instance=ingredient)
-#
-#         return render(request, 'ingredients/add_edit.html', {'ingredient_form': f})
-#
-#
-# def add(request):
-#     if request.method == 'POST':
-#         f = IngredientForm(request.POST)
-#         f.save()
-#         return HttpResponseRedirect(reverse('ingredients:detail', args=(f.instance.id,)))
-#     else:
-#         f = IngredientForm()
-#         return render(request, 'ingredients/add_edit.html', {'ingredient_form': f})

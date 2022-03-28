@@ -14,3 +14,9 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         model = RecipeIngredient
         fields = '__all__'
         depth = 3
+
+
+# class RecipeIngredientShallowSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RecipeIngredient
+#         fields = '__all__'
