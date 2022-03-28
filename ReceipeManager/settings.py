@@ -60,6 +60,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://dynamic-lokum-0bd285.netlify.app"
 ]
+CORS_ALLOW_METHODS = ['DELETE', 'GET', 'POST', 'PUT']
 
 ROOT_URLCONF = 'ReceipeManager.urls'
 
